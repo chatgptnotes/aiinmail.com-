@@ -15,6 +15,9 @@ SQLAlchemy==2.0.23
 pydantic>=2.0.0
 email-validator==2.1.0
 
+# CORS
+Flask-Cors==4.0.0
+
 # Environment & Security
 python-dotenv==1.0.0
 cryptography>=41.0.0

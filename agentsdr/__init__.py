@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 from config import config
 
 # Initialize extensions
@@ -42,6 +43,25 @@ def create_app(config_name=None):
     # Register main routes
     from agentsdr.main import main_bp
     app.register_blueprint(main_bp)
+
+    # Register API blueprint (JSON endpoints for React frontend)
+    from agentsdr.api import api_bp
+    app.register_blueprint(api_bp, url_prefix='/api')
+    csrf.exempt(api_bp)  # API uses Bearer tokens, not CSRF
+
+    # Enable CORS for API routes
+    CORS(app, resources={r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://localhost:5173",
+            "https://2men.co",
+            "https://www.2men.co",
+            "https://2menco.vercel.app",
+        ],
+        "supports_credentials": True,
+        "allow_headers": ["Content-Type", "Authorization"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    }})
 
     # Exempt JSON API routes from CSRF where appropriate
     try:
